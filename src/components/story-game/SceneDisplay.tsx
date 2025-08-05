@@ -1,6 +1,7 @@
 import React from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import ChoiceButton from "./ChoiceButton";
+import DiceRoller from "./DiceRoller"; // New import
 import { Scene, Choice } from "@/data/story";
 
 interface SceneDisplayProps {
@@ -9,6 +10,19 @@ interface SceneDisplayProps {
 }
 
 const SceneDisplay: React.FC<SceneDisplayProps> = ({ scene, onChoice }) => {
+  // Determine if the current scene should use the dice roll mechanic
+  // This applies if there are exactly two choices available.
+  const isDiceRollScene = scene.choices.length === 2;
+
+  const handleDiceRollComplete = (rollResult: number) => {
+    if (isDiceRollScene) {
+      // If roll is higher than 3 (4, 5, 6), select the first choice
+      // Otherwise (1, 2, 3), select the second choice
+      const chosenChoice = rollResult > 3 ? scene.choices[0] : scene.choices[1];
+      onChoice(chosenChoice.nextSceneId);
+    }
+  };
+
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg overflow-hidden">
       <CardHeader className="bg-primary text-primary-foreground p-6">
@@ -21,13 +35,23 @@ const SceneDisplay: React.FC<SceneDisplayProps> = ({ scene, onChoice }) => {
       </CardContent>
       <CardFooter className="flex flex-col gap-4 p-6 bg-muted/30">
         {scene.choices.length > 0 ? (
-          scene.choices.map((choice: Choice, index: number) => (
-            <ChoiceButton
-              key={index}
-              text={choice.text}
-              onClick={() => onChoice(choice.nextSceneId)}
-            />
-          ))
+          isDiceRollScene ? (
+            <div className="flex flex-col items-center gap-4">
+              <p className="text-center text-muted-foreground text-lg mb-2">
+                Roll the dice to decide your fate!
+              </p>
+              <DiceRoller onRollComplete={handleDiceRollComplete} />
+            </div>
+          ) : (
+            // Render regular choice buttons if not a dice roll scene (e.g., end scenes or scenes with more than 2 choices)
+            scene.choices.map((choice: Choice, index: number) => (
+              <ChoiceButton
+                key={index}
+                text={choice.text}
+                onClick={() => onChoice(choice.nextSceneId)}
+              />
+            ))
+          )
         ) : (
           <p className="text-center text-muted-foreground text-lg">
             The End.

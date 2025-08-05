@@ -4,11 +4,44 @@ export interface Choice {
   scoreEffect?: number; // Optional score change for this choice
 }
 
+export interface Creature {
+  id: string;
+  name: string;
+  health: number;
+  winSceneId: string;
+  loseSceneId: string;
+  winScoreEffect: number;
+  loseScoreEffect: number;
+}
+
 export interface Scene {
   id: string;
   text: string;
   choices: Choice[];
+  isEncounter?: boolean; // New: true if this scene is a creature encounter
+  creatureId?: string; // New: ID of the creature for this encounter
 }
+
+export const creatures: Record<string, Creature> = {
+  goblin: {
+    id: "goblin",
+    name: "Goblin",
+    health: 15,
+    winSceneId: "goblinDefeated",
+    loseSceneId: "goblinLost",
+    winScoreEffect: 50,
+    loseScoreEffect: -20,
+  },
+  direWolf: {
+    id: "direWolf",
+    name: "Dire Wolf",
+    health: 25,
+    winSceneId: "wolfDefeated",
+    loseSceneId: "wolfLost",
+    winScoreEffect: 75,
+    loseScoreEffect: -30,
+  },
+};
 
 export const storyData: Record<string, Scene> = {
   start: {
@@ -25,6 +58,7 @@ export const storyData: Record<string, Scene> = {
     choices: [
       { text: "Investigate the whisper", nextSceneId: "whisper", scoreEffect: 10 },
       { text: "Ignore it and keep walking", nextSceneId: "keepWalking", scoreEffect: 1 },
+      { text: "A rustling in the bushes! Investigate.", nextSceneId: "encounterGoblinScene", scoreEffect: 0 } // New choice leading to encounter
     ],
   },
   findPath: {
@@ -33,6 +67,7 @@ export const storyData: Record<string, Scene> = {
     choices: [
       { text: "Follow the trail", nextSceneId: "clearing", scoreEffect: 3 },
       { text: "Go off-trail into the bushes", nextSceneId: "bushes", scoreEffect: -5 },
+      { text: "A growl echoes nearby. Investigate.", nextSceneId: "encounterWolfScene", scoreEffect: 0 } // New choice leading to encounter
     ],
   },
   whisper: {
@@ -80,5 +115,52 @@ export const storyData: Record<string, Scene> = {
     id: "anotherWay",
     text: "You search for another way out and eventually find a narrow, winding path that leads you out of the forest. You are safe. The story ends here.",
     choices: [], // End of story path
+  },
+  // --- New Combat Encounter Scenes ---
+  encounterGoblinScene: {
+    id: "encounterGoblinScene",
+    text: "A small, green-skinned goblin jumps out from behind a tree, snarling! Prepare for combat!",
+    choices: [], // No choices, handled by CombatEncounter component
+    isEncounter: true,
+    creatureId: "goblin",
+  },
+  goblinDefeated: {
+    id: "goblinDefeated",
+    text: "You successfully defeated the goblin! It drops a small, shiny key. You feel more confident.",
+    choices: [
+      { text: "Continue deeper into the forest", nextSceneId: "deepForest", scoreEffect: 10 },
+      { text: "Try to find a path out", nextSceneId: "findPath", scoreEffect: 5 }
+    ],
+  },
+  goblinLost: {
+    id: "goblinLost",
+    text: "The goblin's attacks were too much. You manage to escape, but you're injured and disoriented. You lost some valuable time.",
+    choices: [
+      { text: "Try to find a path out", nextSceneId: "findPath", scoreEffect: 0 },
+      { text: "Rest and recover (Return to Start)", nextSceneId: "start", scoreEffect: 0 }
+    ],
+  },
+  encounterWolfScene: {
+    id: "encounterWolfScene",
+    text: "A massive Dire Wolf emerges from the shadows, its eyes glowing in the mist! This will be a tough fight!",
+    choices: [], // No choices, handled by CombatEncounter component
+    isEncounter: true,
+    creatureId: "direWolf",
+  },
+  wolfDefeated: {
+    id: "wolfDefeated",
+    text: "With a final blow, the Dire Wolf falls! You feel a surge of power and find a rare herb nearby.",
+    choices: [
+      { text: "Continue exploring the forest", nextSceneId: "deepForest", scoreEffect: 15 },
+      { text: "Head towards the clearing", nextSceneId: "clearing", scoreEffect: 10 }
+    ],
+  },
+  wolfLost: {
+    id: "wolfLost",
+    text: "The Dire Wolf's ferocity was overwhelming. You barely escape with your life, badly wounded. You need to recover.",
+    choices: [
+      { text: "Seek immediate rest (Return to Start)", nextSceneId: "start", scoreEffect: 0 },
+      { text: "Limp towards the clearing", nextSceneId: "clearing", scoreEffect: -5 }
+    ],
   },
 };

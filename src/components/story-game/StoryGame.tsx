@@ -2,15 +2,15 @@ import React, { useState, useEffect } from "react";
 import { storyData, Scene, Choice } from "@/data/story";
 import SceneDisplay from "./SceneDisplay";
 import { Button } from "@/components/ui/button";
-import SettingsDialog from "@/components/settings/SettingsDialog"; // New import
-import { useTranslation } from "react-i18next"; // New import
+import SettingsDialog from "@/components/settings/SettingsDialog";
+import { useTranslation } from "react-i18next";
 
 const StoryGame: React.FC = () => {
   const { t } = useTranslation();
   const [currentSceneId, setCurrentSceneId] = useState<string>("start");
   const [score, setScore] = useState<number>(0);
-  const [numDice, setNumDice] = useState<number>(1); // State for number of dice
-  const [diceType, setDiceType] = useState<number>(6); // State for dice type (e.g., D6, D10, D20)
+  const [numDice, setNumDice] = useState<number>(1);
+  const [diceType, setDiceType] = useState<number>(6);
 
   // Initialize theme from localStorage on mount
   useEffect(() => {
@@ -25,6 +25,11 @@ const StoryGame: React.FC = () => {
       setScore(prevScore => prevScore + chosenChoice.scoreEffect!);
     }
     setCurrentSceneId(chosenChoice.nextSceneId);
+  };
+
+  const handleCombatEnd = (nextSceneId: string, scoreEffect: number) => {
+    setScore(prevScore => prevScore + scoreEffect);
+    setCurrentSceneId(nextSceneId);
   };
 
   const restartGame = () => {
@@ -62,8 +67,9 @@ const StoryGame: React.FC = () => {
         onChoice={handleChoice}
         numDice={numDice}
         diceType={diceType}
+        onCombatEnd={handleCombatEnd} // Pass the new handler
       />
-      {currentScene.choices.length === 0 && (
+      {currentScene.choices.length === 0 && !currentScene.isEncounter && ( // Only show play again if not an active encounter
         <Button onClick={restartGame} className="mt-8 px-8 py-4 text-xl">
           {t("playAgain")}
         </Button>

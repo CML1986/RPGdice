@@ -2,19 +2,22 @@ import React from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import ChoiceButton from "./ChoiceButton";
 import DiceRoller from "./DiceRoller";
+import CombatEncounter from "./CombatEncounter"; // New import
 import { Scene, Choice } from "@/data/story";
-import { useTranslation } from "react-i18next"; // New import
+import { useTranslation } from "react-i18next";
 
 interface SceneDisplayProps {
   scene: Scene;
   onChoice: (chosenChoice: Choice) => void;
-  numDice: number; // New prop
-  diceType: number; // New prop
+  numDice: number;
+  diceType: number;
+  onCombatEnd: (nextSceneId: string, scoreEffect: number) => void; // New prop for combat
 }
 
-const SceneDisplay: React.FC<SceneDisplayProps> = ({ scene, onChoice, numDice, diceType }) => {
+const SceneDisplay: React.FC<SceneDisplayProps> = ({ scene, onChoice, numDice, diceType, onCombatEnd }) => {
   const { t } = useTranslation();
-  const isDiceRollScene = scene.choices.length === 2;
+  const isDiceRollScene = scene.choices.length === 2 && !scene.isEncounter; // Exclude encounter scenes
+  const isCombatEncounter = scene.isEncounter && scene.creatureId;
 
   const handleDiceRollComplete = (rollResult: number) => {
     if (isDiceRollScene) {
@@ -29,6 +32,17 @@ const SceneDisplay: React.FC<SceneDisplayProps> = ({ scene, onChoice, numDice, d
 
   // Calculate the threshold for display purposes
   const displayThreshold = Math.floor((numDice * diceType) / 2);
+
+  if (isCombatEncounter) {
+    return (
+      <CombatEncounter
+        creatureId={scene.creatureId!}
+        numDice={numDice}
+        diceType={diceType}
+        onCombatEnd={onCombatEnd}
+      />
+    );
+  }
 
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg overflow-hidden">

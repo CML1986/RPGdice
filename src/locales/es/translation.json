@@ -11,5 +11,15 @@
   "score": "Puntuación:",
   "errorSceneNotFound": "¡Error: Escena No Encontrada!",
   "errorRestartPrompt": "La historia encontró un camino inesperado. Por favor, reinicia el juego.",
-  "restartGame": "Reiniciar Juego"
+  "restartGame": "Reiniciar Juego",
+  "settings": "Configuración",
+  "settingsDescription": "Gestionar opciones del juego.",
+  "theme": "Tema",
+  "toggleTheme": "Cambiar tema",
+  "language": "Idioma",
+  "diceOptions": "Opciones de Dados",
+  "numberOfDice": "Número de Dados",
+  "diceType": "Tipo de Dado",
+  "rollHigh": "Tirada Alta ({{threshold}}+):",
+  "rollLow": "Tirada Baja (1-{{threshold}}):"
 }

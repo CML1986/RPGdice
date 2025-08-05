@@ -1,54 +1,64 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next"; // New import
 
 interface DiceRollerProps {
   onRollComplete: (result: number) => void;
+  numDice: number; // New prop
+  diceType: number; // New prop (e.g., 6 for D6, 20 for D20)
 }
 
-const DiceRoller: React.FC<DiceRollerProps> = ({ onRollComplete }) => {
+const DiceRoller: React.FC<DiceRollerProps> = ({ onRollComplete, numDice, diceType }) => {
+  const { t } = useTranslation();
   const [isRolling, setIsRolling] = useState(false);
-  const [diceValue, setDiceValue] = useState(1);
+  const [diceValues, setDiceValues] = useState<number[]>(Array(numDice).fill(1)); // Array for multiple dice
 
   const rollDice = () => {
     setIsRolling(true);
     const rollDuration = 1500; // milliseconds for the animation
 
-    // Simulate rolling effect by rapidly changing numbers
     let rollCount = 0;
     const interval = setInterval(() => {
-      setDiceValue(Math.floor(Math.random() * 6) + 1);
+      const newValues = Array.from({ length: numDice }, () => Math.floor(Math.random() * diceType) + 1);
+      setDiceValues(newValues);
       rollCount++;
-      if (rollCount > 10) { // Ensure enough "rolls" for visual effect
+      if (rollCount > 10) {
         clearInterval(interval);
       }
     }, 100);
 
     setTimeout(() => {
-      clearInterval(interval); // Clear any lingering interval
-      const finalRoll = Math.floor(Math.random() * 6) + 1;
-      setDiceValue(finalRoll);
+      clearInterval(interval);
+      const finalValues = Array.from({ length: numDice }, () => Math.floor(Math.random() * diceType) + 1);
+      setDiceValues(finalValues);
       setIsRolling(false);
-      onRollComplete(finalRoll);
+      const totalRoll = finalValues.reduce((sum, val) => sum + val, 0);
+      onRollComplete(totalRoll);
     }, rollDuration);
   };
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div
-        className={cn(
-          "relative w-24 h-24 bg-primary-foreground border-4 border-primary rounded-lg flex items-center justify-center text-5xl font-bold text-primary transition-transform duration-300",
-          isRolling ? "animate-spin-dice" : ""
-        )}
-      >
-        {diceValue}
+      <div className="flex gap-2">
+        {diceValues.map((value, index) => (
+          <div
+            key={index}
+            className={cn(
+              "relative w-24 h-24 bg-primary-foreground border-4 border-primary rounded-lg flex items-center justify-center text-5xl font-bold text-primary transition-transform duration-300",
+              isRolling ? "animate-spin-dice" : ""
+            )}
+          >
+            {value}
+          </div>
+        ))}
       </div>
       <Button
         onClick={rollDice}
         disabled={isRolling}
         className="px-8 py-4 text-xl"
       >
-        {isRolling ? "Rolling..." : "Roll the Dice"}
+        {isRolling ? t("rollingButton") : t("rollButton")}
       </Button>
     </div>
   );

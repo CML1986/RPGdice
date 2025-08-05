@@ -1,11 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { storyData, Scene, Choice } from "@/data/story";
 import SceneDisplay from "./SceneDisplay";
 import { Button } from "@/components/ui/button";
+import SettingsDialog from "@/components/settings/SettingsDialog"; // New import
+import { useTranslation } from "react-i18next"; // New import
 
 const StoryGame: React.FC = () => {
+  const { t } = useTranslation();
   const [currentSceneId, setCurrentSceneId] = useState<string>("start");
-  const [score, setScore] = useState<number>(0); // New score state
+  const [score, setScore] = useState<number>(0);
+  const [numDice, setNumDice] = useState<number>(1); // State for number of dice
+  const [diceType, setDiceType] = useState<number>(6); // State for dice type (e.g., D6, D10, D20)
+
+  // Initialize theme from localStorage on mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme") as "light" | "dark" || "light";
+    document.documentElement.classList.toggle("dark", savedTheme === "dark");
+  }, []);
 
   const currentScene: Scene | undefined = storyData[currentSceneId];
 
@@ -18,18 +29,18 @@ const StoryGame: React.FC = () => {
 
   const restartGame = () => {
     setCurrentSceneId("start");
-    setScore(0); // Reset score on restart
+    setScore(0);
   };
 
   if (!currentScene) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
-        <h1 className="text-4xl font-bold text-destructive mb-4">Error: Scene Not Found!</h1>
+        <h1 className="text-4xl font-bold text-destructive mb-4">{t("errorSceneNotFound")}</h1>
         <p className="text-lg text-muted-foreground mb-6">
-          The story encountered an unexpected path. Please restart the game.
+          {t("errorRestartPrompt")}
         </p>
         <Button onClick={restartGame} className="px-8 py-4 text-xl">
-          Restart Game
+          {t("restartGame")}
         </Button>
       </div>
     );
@@ -37,13 +48,24 @@ const StoryGame: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
+      <SettingsDialog
+        numDice={numDice}
+        onNumDiceChange={setNumDice}
+        diceType={diceType}
+        onDiceTypeChange={setDiceType}
+      />
       <div className="absolute top-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-md text-lg font-semibold">
-        Score: {score}
+        {t("score")} {score}
       </div>
-      <SceneDisplay scene={currentScene} onChoice={handleChoice} />
+      <SceneDisplay
+        scene={currentScene}
+        onChoice={handleChoice}
+        numDice={numDice}
+        diceType={diceType}
+      />
       {currentScene.choices.length === 0 && (
         <Button onClick={restartGame} className="mt-8 px-8 py-4 text-xl">
-          Play Again
+          {t("playAgain")}
         </Button>
       )}
     </div>

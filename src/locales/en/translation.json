@@ -11,5 +11,15 @@
   "score": "Score:",
   "errorSceneNotFound": "Error: Scene Not Found!",
   "errorRestartPrompt": "The story encountered an unexpected path. Please restart the game.",
-  "restartGame": "Restart Game"
+  "restartGame": "Restart Game",
+  "settings": "Settings",
+  "settingsDescription": "Manage game options.",
+  "theme": "Theme",
+  "toggleTheme": "Toggle theme",
+  "language": "Language",
+  "diceOptions": "Dice Options",
+  "numberOfDice": "Number of Dice",
+  "diceType": "Dice Type",
+  "rollHigh": "High Roll ({{threshold}}+):",
+  "rollLow": "Low Roll (1-{{threshold}}):"
 }

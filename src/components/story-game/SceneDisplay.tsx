@@ -3,26 +3,37 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import ChoiceButton from "./ChoiceButton";
 import DiceRoller from "./DiceRoller";
 import { Scene, Choice } from "@/data/story";
+import { useTranslation } from "react-i18next"; // New import
 
 interface SceneDisplayProps {
   scene: Scene;
-  onChoice: (chosenChoice: Choice) => void; // Now passes the full Choice object
+  onChoice: (chosenChoice: Choice) => void;
+  numDice: number; // New prop
+  diceType: number; // New prop
 }
 
-const SceneDisplay: React.FC<SceneDisplayProps> = ({ scene, onChoice }) => {
+const SceneDisplay: React.FC<SceneDisplayProps> = ({ scene, onChoice, numDice, diceType }) => {
+  const { t } = useTranslation();
   const isDiceRollScene = scene.choices.length === 2;
 
   const handleDiceRollComplete = (rollResult: number) => {
     if (isDiceRollScene) {
-      const chosenChoice = rollResult > 3 ? scene.choices[0] : scene.choices[1];
+      // Calculate the threshold dynamically based on numDice and diceType
+      const maxPossibleRoll = numDice * diceType;
+      const threshold = Math.floor(maxPossibleRoll / 2);
+
+      const chosenChoice = rollResult > threshold ? scene.choices[0] : scene.choices[1];
       onChoice(chosenChoice);
     }
   };
 
+  // Calculate the threshold for display purposes
+  const displayThreshold = Math.floor((numDice * diceType) / 2);
+
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-lg rounded-lg overflow-hidden">
       <CardHeader className="bg-primary text-primary-foreground p-6">
-        <CardTitle className="text-3xl font-bold text-center">Interactive Story</CardTitle>
+        <CardTitle className="text-3xl font-bold text-center">{t("gameTitle")}</CardTitle>
       </CardHeader>
       <CardContent className="p-6 text-lg text-foreground">
         <CardDescription className="text-xl text-center mb-6 leading-relaxed">
@@ -34,16 +45,16 @@ const SceneDisplay: React.FC<SceneDisplayProps> = ({ scene, onChoice }) => {
           isDiceRollScene ? (
             <div className="flex flex-col items-center gap-4">
               <p className="text-center text-muted-foreground text-lg mb-2">
-                Roll the dice to decide your fate!
+                {t("rollDicePrompt")}
               </p>
-              <DiceRoller onRollComplete={handleDiceRollComplete} />
+              <DiceRoller onRollComplete={handleDiceRollComplete} numDice={numDice} diceType={diceType} />
               <div className="mt-4 text-center">
-                <p className="text-lg font-semibold text-foreground">Possible Outcomes:</p>
+                <p className="text-lg font-semibold text-foreground">{t("possibleOutcomes")}</p>
                 <p className="text-muted-foreground">
-                  Roll 4-6: <span className="font-medium text-primary">{scene.choices[0].text}</span>
+                  {t("rollHigh", { threshold: displayThreshold })} <span className="font-medium text-primary">{scene.choices[0].text}</span>
                 </p>
                 <p className="text-muted-foreground">
-                  Roll 1-3: <span className="font-medium text-primary">{scene.choices[1].text}</span>
+                  {t("rollLow", { threshold: displayThreshold })} <span className="font-medium text-primary">{scene.choices[1].text}</span>
                 </p>
               </div>
             </div>
@@ -58,7 +69,7 @@ const SceneDisplay: React.FC<SceneDisplayProps> = ({ scene, onChoice }) => {
           )
         ) : (
           <p className="text-center text-muted-foreground text-lg">
-            The End.
+            {t("theEnd")}
           </p>
         )}
       </CardFooter>

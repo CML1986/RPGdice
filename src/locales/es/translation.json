@@ -1,0 +1,15 @@
+{
+  "gameTitle": "Historia Interactiva",
+  "rollDicePrompt": "¡Tira los dados para decidir tu destino!",
+  "rollButton": "Tirar los Dados",
+  "rollingButton": "Tirando...",
+  "possibleOutcomes": "Posibles Resultados:",
+  "roll4to6": "Tirada 4-6:",
+  "roll1to3": "Tirada 1-3:",
+  "theEnd": "El Fin.",
+  "playAgain": "Jugar de Nuevo",
+  "score": "Puntuación:",
+  "errorSceneNotFound": "¡Error: Escena No Encontrada!",
+  "errorRestartPrompt": "La historia encontró un camino inesperado. Por favor, reinicia el juego.",
+  "restartGame": "Reiniciar Juego"
+}

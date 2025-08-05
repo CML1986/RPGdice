@@ -1,0 +1,15 @@
+{
+  "gameTitle": "Interactive Story",
+  "rollDicePrompt": "Roll the dice to decide your fate!",
+  "rollButton": "Roll the Dice",
+  "rollingButton": "Rolling...",
+  "possibleOutcomes": "Possible Outcomes:",
+  "roll4to6": "Roll 4-6:",
+  "roll1to3": "Roll 1-3:",
+  "theEnd": "The End.",
+  "playAgain": "Play Again",
+  "score": "Score:",
+  "errorSceneNotFound": "Error: Scene Not Found!",
+  "errorRestartPrompt": "The story encountered an unexpected path. Please restart the game.",
+  "restartGame": "Restart Game"
+}

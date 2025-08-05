@@ -1,19 +1,24 @@
 import React, { useState } from "react";
-import { storyData, Scene } from "@/data/story";
+import { storyData, Scene, Choice } from "@/data/story";
 import SceneDisplay from "./SceneDisplay";
 import { Button } from "@/components/ui/button";
 
 const StoryGame: React.FC = () => {
   const [currentSceneId, setCurrentSceneId] = useState<string>("start");
+  const [score, setScore] = useState<number>(0); // New score state
 
   const currentScene: Scene | undefined = storyData[currentSceneId];
 
-  const handleChoice = (nextSceneId: string) => {
-    setCurrentSceneId(nextSceneId);
+  const handleChoice = (chosenChoice: Choice) => {
+    if (chosenChoice.scoreEffect !== undefined) {
+      setScore(prevScore => prevScore + chosenChoice.scoreEffect!);
+    }
+    setCurrentSceneId(chosenChoice.nextSceneId);
   };
 
   const restartGame = () => {
     setCurrentSceneId("start");
+    setScore(0); // Reset score on restart
   };
 
   if (!currentScene) {
@@ -32,6 +37,9 @@ const StoryGame: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
+      <div className="absolute top-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-md text-lg font-semibold">
+        Score: {score}
+      </div>
       <SceneDisplay scene={currentScene} onChoice={handleChoice} />
       {currentScene.choices.length === 0 && (
         <Button onClick={restartGame} className="mt-8 px-8 py-4 text-xl">

@@ -1,6 +1,7 @@
 export interface Choice {
   text: string;
   nextSceneId: string;
+  scoreEffect?: number; // Optional score change for this choice
 }
 
 export interface Scene {
@@ -14,40 +15,40 @@ export const storyData: Record<string, Scene> = {
     id: "start",
     text: "You wake up in a mysterious forest. The air is thick with mist, and ancient trees loom around you. Do you go deeper into the forest or try to find a path?",
     choices: [
-      { text: "Go deeper into the forest", nextSceneId: "deepForest" },
-      { text: "Look for a path", nextSceneId: "findPath" },
+      { text: "Go deeper into the forest", nextSceneId: "deepForest", scoreEffect: 5 },
+      { text: "Look for a path", nextSceneId: "findPath", scoreEffect: 2 },
     ],
   },
   deepForest: {
     id: "deepForest",
     text: "You venture deeper, the trees growing denser. You hear a faint whisper. Do you investigate the whisper or ignore it?",
     choices: [
-      { text: "Investigate the whisper", nextSceneId: "whisper" },
-      { text: "Ignore it and keep walking", nextSceneId: "keepWalking" },
+      { text: "Investigate the whisper", nextSceneId: "whisper", scoreEffect: 10 },
+      { text: "Ignore it and keep walking", nextSceneId: "keepWalking", scoreEffect: 1 },
     ],
   },
   findPath: {
     id: "findPath",
     text: "You search for a path and soon find a faint, overgrown trail. It seems to lead towards a clearing. Do you follow the trail or go off-trail?",
     choices: [
-      { text: "Follow the trail", nextSceneId: "clearing" },
-      { text: "Go off-trail into the bushes", nextSceneId: "bushes" },
+      { text: "Follow the trail", nextSceneId: "clearing", scoreEffect: 3 },
+      { text: "Go off-trail into the bushes", nextSceneId: "bushes", scoreEffect: -5 },
     ],
   },
   whisper: {
     id: "whisper",
     text: "You follow the whisper and find a shimmering, ethereal creature. It offers you a glowing orb. Do you take the orb or refuse?",
     choices: [
-      { text: "Take the orb", nextSceneId: "orbTaken" },
-      { text: "Refuse the orb", nextSceneId: "orbRefused" },
+      { text: "Take the orb", nextSceneId: "orbTaken", scoreEffect: 20 },
+      { text: "Refuse the orb", nextSceneId: "orbRefused", scoreEffect: 0 },
     ],
   },
   keepWalking: {
     id: "keepWalking",
     text: "You ignore the whisper and continue walking. Eventually, you stumble upon a hidden cave entrance. Do you enter the cave or try to find another way out?",
     choices: [
-      { text: "Enter the cave", nextSceneId: "cave" },
-      { text: "Look for another way out", nextSceneId: "anotherWay" },
+      { text: "Enter the cave", nextSceneId: "cave", scoreEffect: -10 },
+      { text: "Look for another way out", nextSceneId: "anotherWay", scoreEffect: 5 },
     ],
   },
   clearing: {

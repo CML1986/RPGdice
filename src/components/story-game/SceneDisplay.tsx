@@ -1,25 +1,21 @@
 import React from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import ChoiceButton from "./ChoiceButton";
-import DiceRoller from "./DiceRoller"; // New import
+import DiceRoller from "./DiceRoller";
 import { Scene, Choice } from "@/data/story";
 
 interface SceneDisplayProps {
   scene: Scene;
-  onChoice: (nextSceneId: string) => void;
+  onChoice: (chosenChoice: Choice) => void; // Now passes the full Choice object
 }
 
 const SceneDisplay: React.FC<SceneDisplayProps> = ({ scene, onChoice }) => {
-  // Determine if the current scene should use the dice roll mechanic
-  // This applies if there are exactly two choices available.
   const isDiceRollScene = scene.choices.length === 2;
 
   const handleDiceRollComplete = (rollResult: number) => {
     if (isDiceRollScene) {
-      // If roll is higher than 3 (4, 5, 6), select the first choice
-      // Otherwise (1, 2, 3), select the second choice
       const chosenChoice = rollResult > 3 ? scene.choices[0] : scene.choices[1];
-      onChoice(chosenChoice.nextSceneId);
+      onChoice(chosenChoice);
     }
   };
 
@@ -41,14 +37,22 @@ const SceneDisplay: React.FC<SceneDisplayProps> = ({ scene, onChoice }) => {
                 Roll the dice to decide your fate!
               </p>
               <DiceRoller onRollComplete={handleDiceRollComplete} />
+              <div className="mt-4 text-center">
+                <p className="text-lg font-semibold text-foreground">Possible Outcomes:</p>
+                <p className="text-muted-foreground">
+                  Roll 4-6: <span className="font-medium text-primary">{scene.choices[0].text}</span>
+                </p>
+                <p className="text-muted-foreground">
+                  Roll 1-3: <span className="font-medium text-primary">{scene.choices[1].text}</span>
+                </p>
+              </div>
             </div>
           ) : (
-            // Render regular choice buttons if not a dice roll scene (e.g., end scenes or scenes with more than 2 choices)
             scene.choices.map((choice: Choice, index: number) => (
               <ChoiceButton
                 key={index}
                 text={choice.text}
-                onClick={() => onChoice(choice.nextSceneId)}
+                onClick={() => onChoice(choice)}
               />
             ))
           )
